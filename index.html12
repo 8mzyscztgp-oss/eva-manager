@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EVA Manager</title>
+
+<style>
+body{
+font-family:Arial,sans-serif;
+background:#f4f6f8;
+margin:0;
+padding:0;
+}
+
+header{
+background:#1565c0;
+color:white;
+padding:15px;
+text-align:center;
+}
+
+.container{
+padding:15px;
+max-width:700px;
+margin:auto;
+}
+
+.card{
+background:white;
+padding:15px;
+margin-bottom:15px;
+border-radius:12px;
+box-shadow:0 2px 6px rgba(0,0,0,.1);
+}
+
+.user{
+padding:10px;
+border-bottom:1px solid #ddd;
+cursor:pointer;
+}
+
+.plus{
+position:fixed;
+bottom:20px;
+right:20px;
+width:60px;
+height:60px;
+border-radius:50%;
+border:none;
+font-size:30px;
+background:#1565c0;
+color:white;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:5px 0;
+}
+
+.hidden{
+display:none;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>EVA Manager</h2>
+<p>Gestion des résidents</p>
+</header>
+
+<div class="container">
+
+<div class="card">
+<h3>Dashboard</h3>
+<p>Présents: <span id="present">0</span></p>
+<p>Sorties: <span id="outside">0</span></p>
+</div>
+
+<div class="card">
+<h3>Résidents</h3>
+<div id="list"></div>
+</div>
+
+<div id="details" class="card hidden"></div>
+
+<div id="form" class="card hidden">
+<h3>Ajouter un résident</h3>
+
+<input id="nom" placeholder="Nom et prénom">
+
+<input id="chambre" placeholder="Chambre">
+
+<input id="retour" type="time">
+
+<button onclick="addResident()">
+Ajouter
+</button>
+
+</div>
+
+</div>
+
+<button class="plus" onclick="toggleForm()">+</button>
+
+<script>
+
+let residents = [
+{
+name:"Lucas Martin",
+room:"101",
+status:"Présent",
+returnTime:"18:00"
+},
+{
+name:"Sarah Dubois",
+room:"102",
+status:"Sortie",
+returnTime:"17:30"
+}
+];
+
+function render(){
+
+let list=document.getElementById("list");
+
+list.innerHTML="";
+
+residents.forEach((r,i)=>{
+
+let div=document.createElement("div");
+
+div.className="user";
+
+div.innerHTML=
+r.name+
+" - "+
+r.status;
+
+div.onclick=()=>showResident(i);
+
+list.appendChild(div);
+
+});
+
+updateStats();
+}
+
+function updateStats(){
+
+document.getElementById("present").innerText=
+residents.filter(x=>x.status==="Présent").length;
+
+document.getElementById("outside").innerText=
+residents.filter(x=>x.status==="Sortie").length;
+
+}
+
+function showResident(i){
+
+let r=residents[i];
+
+let d=document.getElementById("details");
+
+d.classList.remove("hidden");
+
+d.innerHTML=`
+
+<h3>${r.name}</h3>
+
+<p>Chambre: ${r.room}</p>
+
+<p>Statut: ${r.status}</p>
+
+<p>Retour: ${r.returnTime}</p>
+
+<button onclick="changeStatus(${i},'Présent')">
+Présent
+</button>
+
+<button onclick="changeStatus(${i},'Sortie')">
+Sortie
+</button>
+
+`;
+
+}
+
+function changeStatus(i,status){
+
+residents[i].status=status;
+
+render();
+
+showResident(i);
+
+}
+
+function toggleForm(){
+
+document
+.getElementById("form")
+.classList
+.toggle("hidden");
+
+}
+
+function addResident(){
+
+let nom=
+document.getElementById("nom").value;
+
+let chambre=
+document.getElementById("chambre").value;
+
+let retour=
+document.getElementById("retour").value;
+
+if(!nom || !chambre){
+
+alert("Compléter les champs");
+
+return;
+
+}
+
+residents.push({
+
+name:nom,
+room:chambre,
+status:"Présent",
+returnTime:retour
+
+});
+
+render();
+
+alert("Résident ajouté");
+
+}
+
+render();
+
+</script>
+
+</body>
+</html>
